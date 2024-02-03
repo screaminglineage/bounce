@@ -3,11 +3,16 @@
 #include <stdbool.h>
 #include <string.h>
 #include <raylib.h>
+#include <raymath.h>
 
 const int width = 800;
 const int height = 600;
 
 #define COLOR_COUNT 10
+
+Vector2 vector2_sign(Vector2 vec) {
+    return (Vector2){(vec.x >= 0)? 1: -1, (vec.y >= 0)? 1: -1};
+}
 
 int main() {
     Color colors[COLOR_COUNT] = {
@@ -84,6 +89,29 @@ int main() {
         }
         if (IsKeyPressed(KEY_SPACE)) 
             paused = !paused;
+
+        if (IsKeyPressed(KEY_X) && !paused) {
+            velocity = Vector2ClampValue(
+                Vector2Add(
+                    velocity, 
+                    Vector2Scale(vector2_sign(velocity), 10)
+                ),
+                100,
+                1000
+            );
+        }
+
+        if (IsKeyPressed(KEY_Z) && !paused && velocity.x >= 100 && velocity.y >= 100) {
+            velocity = Vector2ClampValue(
+                Vector2Subtract(
+                    velocity, 
+                    Vector2Scale(vector2_sign(velocity), 10)
+                ),
+                100,
+                1000
+            );
+
+        }
 
         BeginDrawing();
         ClearBackground(bg_color);
