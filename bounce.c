@@ -1,7 +1,6 @@
 #include <stdio.h>
-#include <stdlib.h>
 #include <stdbool.h>
-#include <string.h>
+#include <math.h>
 #include <raylib.h>
 #include <raymath.h>
 
@@ -29,8 +28,10 @@ int main() {
     size_t color_i = 0; // index into colors array
 
     const char* hint = "Press SPACE to Start!";
+    const char* controls = "Z/X to adjust speed";
     int font_size = 30;
     int hint_width = MeasureText(hint, font_size);
+    int controls_width = MeasureText(controls, font_size);
 
     // hitboxes
     Vector2 hitbox = {10, 10};
@@ -50,8 +51,8 @@ int main() {
     bool paused = true;
     while (!WindowShouldClose()) {
         
-        if (!paused) {
             float dt = GetFrameTime();
+        if (!paused) {
             Vector2 new_pos = {box.x + velocity.x * dt, box.y + velocity.y * dt};
 
             // collision detection
@@ -90,25 +91,26 @@ int main() {
         if (IsKeyPressed(KEY_SPACE)) 
             paused = !paused;
 
-        if (IsKeyPressed(KEY_X) && !paused) {
-            velocity = Vector2ClampValue(
-                Vector2Add(
-                    velocity, 
-                    Vector2Scale(vector2_sign(velocity), 10)
-                ),
-                100,
-                1000
-            );
-        }
-
-        if (IsKeyPressed(KEY_Z) && !paused && velocity.x >= 100 && velocity.y >= 100) {
+        
+        if (IsKeyPressed(KEY_Z) && !paused) { 
             velocity = Vector2ClampValue(
                 Vector2Subtract(
                     velocity, 
-                    Vector2Scale(vector2_sign(velocity), 10)
+                    Vector2Scale(vector2_sign(velocity), 100)
                 ),
-                100,
-                1000
+                200,
+                1500
+            );
+
+        }
+        if (IsKeyPressed(KEY_X) && !paused) { 
+            velocity = Vector2ClampValue(
+                Vector2Add(
+                    velocity, 
+                    Vector2Scale(vector2_sign(velocity), 100)
+                ),
+                200,
+                1500
             );
 
         }
@@ -119,8 +121,10 @@ int main() {
         DrawRectangleRec(box, colors[color_i]);
 
         DrawText(TextFormat("%d", count), 10, 5, font_size, WHITE);
+        DrawText(TextFormat("Speed: %d", (int)Remap(Vector2Length(velocity), 200, 1500, 1, 13)), 10, font_size, font_size, WHITE);
         if (paused) {
             DrawText(hint, width/2 - hint_width/2, height/2 + box.height/2 + 30, font_size, WHITE);
+            DrawText(controls, width/2 - controls_width/2, height/2 + box.height/2 + 60, font_size, WHITE);
         }
 
         EndDrawing();
