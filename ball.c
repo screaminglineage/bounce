@@ -22,7 +22,7 @@ int main() {
     InitAudioDevice();      
 
     Color bg_color = GetColor(0x1a1d23ff);
-    float radius = 50;
+    float radius = 100;
     Vector2 ball = {width/2, height/2};
 
     size_t color_i = 0; // index into colors array
@@ -69,32 +69,51 @@ int main() {
                 velocity.y += 25;
         }
 
+        switch(GetKeyPressed()) {
+            case KEY_SPACE: {
+                paused = !paused;
+                break;
+            }
+            case KEY_Z: {
+                if (!paused) {
+                    velocity = Vector2ClampValue(
+                        Vector2Subtract(
+                            velocity, 
+                            Vector2Scale(vector2_sign(velocity), 100)
+                        ),
+                        200,
+                        1500
+                    );
 
-        if (IsKeyPressed(KEY_SPACE)) 
-            paused = !paused;
+                }
+                break;
+            }            
+            case KEY_X: {
+                if (!paused) {
+                    velocity = Vector2ClampValue(
+                        Vector2Add(
+                            velocity, 
+                            Vector2Scale(vector2_sign(velocity), 100)
+                        ),
+                        200,
+                        1500
+                    );
 
-        
-        if (IsKeyPressed(KEY_Z) && !paused) { 
-            velocity = Vector2ClampValue(
-                Vector2Subtract(
-                    velocity, 
-                    Vector2Scale(vector2_sign(velocity), 100)
-                ),
-                200,
-                1500
-            );
-
-        }
-        if (IsKeyPressed(KEY_X) && !paused) { 
-            velocity = Vector2ClampValue(
-                Vector2Add(
-                    velocity, 
-                    Vector2Scale(vector2_sign(velocity), 100)
-                ),
-                200,
-                1500
-            );
-
+                }
+                break;
+            }
+            case KEY_A: {
+                if (!paused) {
+                    radius = Clamp(radius - 10, 20, 200); 
+                }
+                break;
+            }
+            case KEY_S: {
+                if (!paused) {
+                    radius = Clamp(radius + 10, 20, 200); 
+                }
+                break;
+            }
         }
 
         BeginDrawing();
@@ -102,7 +121,7 @@ int main() {
 
         DrawCircleV(ball, radius, RED);
 
-        DrawText(TextFormat("%d", count), 10, 5, font_size, WHITE);
+        DrawText(TextFormat("Radius: %d", (int)radius), 10, 5, font_size, WHITE);
         DrawText(TextFormat("Speed: %d", (int)Remap(Vector2Length(velocity), 200, 1500, 1, 13)), 10, font_size, font_size, WHITE);
         if (paused) {
             DrawText(hint, width/2 - hint_width/2, height/2 + radius + 30, font_size, WHITE);
