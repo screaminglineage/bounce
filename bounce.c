@@ -53,7 +53,8 @@ int main() {
         
             float dt = GetFrameTime();
         if (!paused) {
-            Vector2 new_pos = {box.x + velocity.x * dt, box.y + velocity.y * dt};
+            Vector2 new_pos = Vector2Add((Vector2){box.x, box.y}, Vector2Scale(velocity, dt)); 
+                            //{box.x + velocity.x * dt, box.y + velocity.y * dt};
 
             // collision detection
             if (new_pos.x <= 0 || new_pos.x + box.width >= width) {
